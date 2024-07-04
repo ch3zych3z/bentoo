@@ -11,8 +11,14 @@ use serde_sarif::sarif::{
 use crate::reference::truth::{CWEs, CWE};
 
 #[derive(Debug, Deserialize)]
+struct RuleInfo {
+    pub title: String,
+    pub cwe: Vec<u64>,
+}
+
+#[derive(Debug, Deserialize)]
 struct RuleMap {
-    pub rule_mapping: HashMap<String, Vec<u64>>,
+    pub rule_mapping: HashMap<String, RuleInfo>,
 }
 
 impl RuleMap {
@@ -89,7 +95,7 @@ fn from_json(json: Value) -> Sarif {
         if !rules.rule_mapping.contains_key(rule) {
             continue;
         }
-        let cwes = rules.rule_mapping[rule]
+        let cwes = rules.rule_mapping[rule].cwe
             .iter()
             .map(|cwe| CWE(*cwe))
             .collect();
